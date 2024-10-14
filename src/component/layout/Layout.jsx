@@ -6,8 +6,11 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faFile,faUsersRectangle,faBuilding,faPaste,faCalendarDays} from '@fortawesome/free-solid-svg-icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import { Outlet } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
+import { icon } from '@fortawesome/fontawesome-svg-core';
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -19,44 +22,64 @@ function getItem(label, key, icon, children) {
 }
 
 const MenuData = [
-  { label: 'Dashboard', key: '1', icon: <PieChartOutlined />, children: [] },
-  { label: 'Conputer', key: '2', icon: <DesktopOutlined />, children: [] },
+  { label: 'Dashboard', key: 'sub1',path: "/dashboard", icon: <PieChartOutlined />, children: [] },
   { 
     label: 'Account', 
-    key: 'sub1', 
+    key: 'sub2', 
     icon: <UserOutlined />, 
     children: [
-      { label: 'Tom', key: '3' },
-      { label: 'Bill', key: '4' },
-      { label: 'Alex', key: '5' }
+      { label: 'New Account', key: 'acc1' ,path:"/account/new"},
+      { label: 'List Account', key: 'acc2',path: "/account/list" },
+    ]
+  },
+  { label: 'Candidate', key: 'sub3',path: "/Candidate", icon: <FontAwesomeIcon icon={faUsersRectangle} />, children: [
+    { label: 'New Candidate', key: 'cd1' ,path:"/new"},
+    { label: 'List Candidate', key: 'cd2' },
+  ]},
+  { 
+    label: 'CV', 
+    key: 'sub4', 
+    icon: <FontAwesomeIcon icon={faFile} />,
+    path: "/cv",
+    children: [
+      { label: 'New CV', key: 'cv1' ,path:"/home"},
+      { label: 'List CV', key: 'cv2' },
     ]
   },
   { 
     label: 'Group', 
-    key: 'sub2', 
+    key: 'sub5', 
     icon: <TeamOutlined />, 
     children: [
-      { label: 'Team 1', key: '6' },
-      { label: 'Team 2', key: '8' },
-      { label: 'Team 1', key: '10' },
-      { label: 'Team 2', key: '11' },
-      { label: 'Team 1', key: '12' },
-      { label: 'Team 2', key: '13' },
-      { label: 'Team 1', key: '14' },
-      { label: 'Team 2', key: '15' },
+      { label: 'Team 1', key: 'group1' ,path: "/home"},
+      { label: 'Team 2', key: 'group2' },
+      { label: 'Team 1', key: 'group3' }
     ]
   },
-  { label: 'Email Service', key: '9', icon: <FileOutlined />, children: [] }
+  { label: 'Email Service', key: 'sub6', icon: <FileOutlined />, children: [] },
+  {label: 'Company',key: 'sub7',icon: <FontAwesomeIcon icon={faBuilding} />, children: [
+      { label: 'New Company', key: 'cp1' ,path: "/add-company"},
+      { label: 'List Company', key: 'cp2' ,path: "/list-company"},
+  ]},
+  {label: 'Job',key: 'sub8',icon: <FontAwesomeIcon icon={faPaste} />, children: 
+  [{ label: 'New Job', key: 'j1' ,path: "/add-job"},
+    { label: 'List Job', key: 'j2' ,path: "/list-job"},]},
+  {label: 'Interview',key: 'sub9',icon: <FontAwesomeIcon icon={faCalendarDays} />, children: [
+    { label: 'New Interview', key: 'iv1' ,path: "/add-interview"},
+      { label: 'List Interview', key: 'iv2',path: "/list-interview" },
+  ]}
 ];
 
 const items = MenuData.map(data => {
+
   if (data.children && data.children.length > 0) {
     // Nếu có submenu (children), sinh các item con
-    const children = data.children.map(child => getItem(child.label, child.key));
+    const children = data.children.map(child => getItem((child.path) ? <NavLink to={(data.path) ? data.path + child.path : child.path}>{child.label}</NavLink> : child.label, child.key));
     return getItem(data.label, data.key, data.icon, children);
   }
   // Nếu không có submenu, chỉ sinh item chính
-  return getItem(data.label, data.key, data.icon);
+  return getItem((data.path) ? <NavLink to={data.path}>{data.label}</NavLink> : data.label, data.key, data.icon);
+  
 });
 
 
@@ -95,6 +118,7 @@ const layout = () => {
             className='h-full p-[24px] min-h-[360px] bg-white rounded-[5px]'
           >
             <Outlet/>
+            
           </div>
         </Content>
         <Footer

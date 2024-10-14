@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 @import url("./styles/Layout.scss");
+@import url("./styles/sign-in.scss");
+@import url("./styles/page-error.scss");
+
 .container{
     height: 100vh;
 }

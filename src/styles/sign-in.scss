@@ -1,0 +1,165 @@
+
+.sign-in{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url(../assets/bg-signin.jpeg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    
+
+    .about-form-login{
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .title-form{
+            font-size: 50px;
+            font-weight: 700;
+            margin-bottom: 50px;
+        }
+
+        .social-signin{
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            .facebook-color{
+                background: #4267B2;
+            }
+            .twitter-color{
+                background: #1DA1F2;
+            }
+            .social-item{
+                width: 250px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 8px 8px;
+                border-radius: 2px;
+                gap: 15px;
+
+                svg{
+                    font-size: 20px;
+                    color: white;
+                }
+                span{
+                    width: 80%;
+                    font-size: 12px;
+                    padding-left: 15px;
+                    color: white;
+                    border-left: 1px solid #fff;
+                }
+            }
+        }
+
+        .form-signin{
+            width: 100%;
+            .ant-row{
+                max-width: 100%;
+                .ant-col{
+                    max-width: 100%;
+                    margin: 0;
+                }
+            }
+
+            .ant-form-item-control-input-content{
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .btn-login{
+                button{
+                    width: 100%;
+                    height: 50px;
+                    font-size: 20px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                }
+            }
+
+        }
+        .signin-underline{
+            background-color: aliceblue;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+
+            &::before{
+                content: "";
+                position: absolute;
+                height: 2px;
+                width: 300px;
+                border-radius: 50%;
+                background-color: aliceblue;
+            }
+
+            span{
+                z-index: 1;
+            }
+        }
+    }
+
+    .form-verify-otp{
+        width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        align-items: center;
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 5px;
+
+        .title {
+            font-size: 24px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .text {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .btn-form{
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 30px;
+
+            .item-btn-form{
+                display: block;
+                width: 46%;
+                padding: 8px 0px;
+                font-weight: 600;
+                text-align: center;
+                font-size: 18px;
+                text-transform: uppercase;
+            }
+
+            .btn-cancel{
+                background: #e2e2e2;
+                transition: 0.05s ease-out;
+
+                &:hover{
+                    background: #d7d7d7;
+                }
+            }
+
+            .btn-submit{
+                color: #fff;
+                background: #ce3e3e;
+            }
+        }
+    }
+}

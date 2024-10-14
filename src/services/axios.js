@@ -1,14 +1,19 @@
 import axios from "axios";
 
 const instance = axios.create({
-    baseURL: "http://localhost:5173/",
+    baseURL: "http://localhost:8083",
+    headers: {
+        'Authorization': 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJyb290IiwiaWF0IjoxNzI4OTAxMTAwLCJleHAiOjE3Mjg5MjE4MzZ9.0qye31TCa3CejCaeGj8i3k_ewwRytr5rk4EMvDAmbKm848w6_w3MvldJJbwNhUeW',
+        'Content-Type': 'multipart/form-data'
+    }
+
 });
 
 instance.interceptors.response.use(function (response){
-    if (localStorage.getItem("token")) {
-        const token = localStorage.getItem("token");
-        response.headers.Authorization = `Bearer ${token}`;
-    }
+    // if (localStorage.getItem("access-token")) {
+    //     const token = localStorage.getItem("access-token");
+    //     response.headers.Authorization = `Bearer ${token}`;
+    // }
 
     return response ? response.data : {statusCode: response.status};
 },function (error){
