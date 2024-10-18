@@ -7,6 +7,7 @@ import VerifyOTP from "../form/VerifyOTP";
 import PageAccount from "../page/PageAccount";
 import PageError from "../page/PageError";
 import AddNewAccount from "../page/AddNewAccount";
+import UpdateAccount from "../page/UpdateAccount";
 
 const Router = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ const Router = createBrowserRouter([
                     {
                         path:"new",
                         element: <AddNewAccount/>
+                    },
+                    {
+                        path:"update/:id",
+                        element: <UpdateAccount/>
                     }
                 ]
             }

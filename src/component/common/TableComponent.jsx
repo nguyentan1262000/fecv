@@ -9,7 +9,7 @@ const TableComponent = (props) => {
     }
     return<div className='table-component'>
         <div className='title'>
-            <NavLink className="btn__add-new" to="#">Add new</NavLink>
+            <NavLink className="btn__add-new" to={props.linkAdd}>Add new</NavLink>
             <h2 className='title-text'>{props.title}</h2>
         </div>
         <Table className='mb-5' columns={props.columns} dataSource={props.data} pagination={false}/>

@@ -3,7 +3,7 @@ import axios from "axios";
 const instance = axios.create({
     baseURL: "http://localhost:8083",
     headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJyb290IiwiaWF0IjoxNzI4OTAxMTAwLCJleHAiOjE3Mjg5MjE4MzZ9.0qye31TCa3CejCaeGj8i3k_ewwRytr5rk4EMvDAmbKm848w6_w3MvldJJbwNhUeW',
+        'Authorization': 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJyb290IiwiaWF0IjoxNzI5MTUwMDI0LCJleHAiOjE3MjkxNzA3NjB9.j6FXP4vo4QIAEY4_CrHDmaCYy_RgrzIihu4aNZAijGZcs5BkK-cq7AzgmNsHEmqF',
         'Content-Type': 'multipart/form-data'
     }
 
@@ -21,6 +21,7 @@ instance.interceptors.response.use(function (response){
     if(error.response)
     {
         res.data =  error.response.data;
+        res.message = error.response.message;
         res.status = error.response.status;
         res.headers =error.response.headers;
     }else if(error.request){
@@ -30,7 +31,6 @@ instance.interceptors.response.use(function (response){
     }
 
     return res;
-    // return Promise.reject(error);
 });
 
 export default instance;
