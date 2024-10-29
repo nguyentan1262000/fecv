@@ -7,10 +7,10 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faFile,faUsersRectangle,faBuilding,faPaste,faCalendarDays} from '@fortawesome/free-solid-svg-icons';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import { NavLink, Outlet } from 'react-router-dom';
-import { icon } from '@fortawesome/fontawesome-svg-core';
+import {faFile,faUsersRectangle,faBuilding,faPaste,faCalendarDays,faGear} from '@fortawesome/free-solid-svg-icons';
+import { Breadcrumb, Layout, Menu, theme , Button ,Dropdown, Modal} from 'antd';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { requestLogout } from '../../services/authAPI';
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -26,51 +26,29 @@ const MenuData = [
   { 
     label: 'Account', 
     key: 'sub2', 
-    icon: <UserOutlined />, 
-    children: [
-      { label: 'New Account', key: 'acc1' ,path:"/account/new"},
-      { label: 'List Account', key: 'acc2',path: "/account/list" },
-    ]
+    path: "/account/list",
+    icon: <UserOutlined />
   },
-  { label: 'Candidate', key: 'sub3',path: "/Candidate", icon: <FontAwesomeIcon icon={faUsersRectangle} />, children: [
-    { label: 'New Candidate', key: 'cd1' ,path:"/new"},
-    { label: 'List Candidate', key: 'cd2' },
-  ]},
+  { label: 'Candidate', key: 'sub3',path: "/candidate", icon: <FontAwesomeIcon icon={faUsersRectangle} />},
   { 
     label: 'CV', 
     key: 'sub4', 
     icon: <FontAwesomeIcon icon={faFile} />,
-    path: "/cv",
-    children: [
-      { label: 'New CV', key: 'cv1' ,path:"/home"},
-      { label: 'List CV', key: 'cv2' },
-    ]
+    path: "/cv"
   },
   { 
     label: 'Group', 
     key: 'sub5', 
-    icon: <TeamOutlined />, 
-    children: [
-      { label: 'Team 1', key: 'group1' ,path: "/home"},
-      { label: 'Team 2', key: 'group2' },
-      { label: 'Team 1', key: 'group3' }
-    ]
+    icon: <TeamOutlined />,
+    path: "/group"
   },
-  { label: 'Email Service', key: 'sub6', icon: <FileOutlined />, children: [] },
-  {label: 'Company',key: 'sub7',icon: <FontAwesomeIcon icon={faBuilding} />, children: [
-      { label: 'New Company', key: 'cp1' ,path: "/add-company"},
-      { label: 'List Company', key: 'cp2' ,path: "/list-company"},
-  ]},
-  {label: 'Job',key: 'sub8',icon: <FontAwesomeIcon icon={faPaste} />, children: 
-  [{ label: 'New Job', key: 'j1' ,path: "/add-job"},
-    { label: 'List Job', key: 'j2' ,path: "/list-job"},]},
-  {label: 'Interview',key: 'sub9',icon: <FontAwesomeIcon icon={faCalendarDays} />, children: [
-    { label: 'New Interview', key: 'iv1' ,path: "/add-interview"},
-      { label: 'List Interview', key: 'iv2',path: "/list-interview" },
-  ]}
+  { label: 'Email Service', key: 'sub6',path: "/services", icon: <FileOutlined />, children: [] },
+  {label: 'Company',key: 'sub7',path: "/company",icon: <FontAwesomeIcon icon={faBuilding} />},
+  {label: 'Job',key: 'sub8',path: "/job",icon: <FontAwesomeIcon icon={faPaste} />},
+  {label: 'Interview',key: 'sub9',path: "/interview",icon: <FontAwesomeIcon icon={faCalendarDays} />}
 ];
 
-const items = MenuData.map(data => {
+const itemMenu = MenuData.map(data => {
 
   if (data.children && data.children.length > 0) {
     // Nếu có submenu (children), sinh các item con
@@ -82,12 +60,45 @@ const items = MenuData.map(data => {
   
 });
 
+const items = [
+  {
+    key: '1',
+    label: (
+      <NavLink to="/account/profile">
+        Profile
+      </NavLink>
+    )
+  },
+  {
+    key: '2',
+    label: (
+      <NavLink to="https://www.antgroup.com">
+        Change Password
+      </NavLink>
+    )
+  },
+];
 
 const layout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const {
       token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+      const res = await requestLogout();
+      if(res.data.status == 200){
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("id");
+        navigate("/login");
+      }else{
+        alert("logout that bai");
+      }
+      
+    }
+
   return (
     <div className="container">
         <Layout
@@ -98,15 +109,21 @@ const layout = () => {
     >
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
         <div className="demo-logo-vertical" />
-        <Menu className='menu-homepage' theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+        <Menu className='menu-homepage' theme="dark" defaultSelectedKeys={['1']} mode="inline" items={itemMenu} />
       </Sider>
       <Layout>
         <Header
           style={{
-            padding: 0,
             background: colorBgContainer,
           }}
-        />
+          className='header-layout'
+        >
+          <Dropdown menu={{items,}} trigger={['click']} placement="bottom">
+            <FontAwesomeIcon className='text-[20px] cursor-pointer' icon={faGear} />
+          </Dropdown>
+
+          <Button onClick={handleLogout}>Logout</Button>
+        </Header>
         <Content
           className='mx-[16px]'
         >

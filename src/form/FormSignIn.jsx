@@ -4,6 +4,7 @@ import {faFacebookF, faTwitter} from '@fortawesome/free-brands-svg-icons'
 import { Button, Checkbox, Form, Input } from 'antd';
 import { requestLogin } from '../services/authAPI';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const FormSignIn = (props) => {
     const [form,setForm] = useState({
@@ -11,21 +12,30 @@ const FormSignIn = (props) => {
         password: ""
     });
 
+    const navigate = useNavigate();
+
     const fetchLogin = async (data) => {
         const res = await requestLogin(data);
-        if(res.data.status == 200){
-
+        console.log(res);
+        
+        if(res.status == 200){
+            alert(res.data.message);
+            navigate("/login/veryfy-otp",{
+              state : {username : data.username}
+            });
+        }else{
+          alert('Username or Password is incorrect.');
         }
       }
 
-    const onFinish = (values) => {
-      console.log('Success:', values);
-      setForm(prevState => ({
-        ...prevState,
-        username : values.username,
-        password : values.password
-      }));
+    function onChange(e){
+      setForm({
+        ...form,
+        [e.target.name] : e.target.value
+      })
+    }
 
+    const onFinish = () => {
       fetchLogin(form);
     };
     const onFinishFailed = (errorInfo) => {
@@ -80,8 +90,8 @@ const FormSignIn = (props) => {
         },
       ]}
     >
-      <Input />
-    </Form.Item>
+      <Input name='username' onChange={(e) => onChange(e)} />
+    </Form.Item >
 
     <Form.Item
       label="Password"
@@ -93,7 +103,7 @@ const FormSignIn = (props) => {
         },
       ]}
     >
-      <Input.Password />
+      <Input.Password name='password' onChange={(e) => onChange(e)}/>
     </Form.Item>
 
     <Form.Item
@@ -116,9 +126,7 @@ const FormSignIn = (props) => {
       }}
       className='btn-login'
     >
-      <Button  type="primary" htmlType="submit">
-      Login
-      </Button>
+      <Button  type="primary" htmlType="submit">Login</Button>
     </Form.Item>
   </Form>
             <div className="link-signup">

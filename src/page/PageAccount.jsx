@@ -1,87 +1,92 @@
-import { Space } from "antd";
+import { Avatar, Button, Select, Space } from "antd";
 import TableComponent from "../component/common/TableComponent";
 import { NavLink, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Input } from 'antd';
-import axios from "axios";
-import { fetchGetUsers } from "../services/userAPI";
+import axios, { HttpStatusCode } from "axios";
+import { fetchAdminDeleteAccountById, fetchGetUsers } from "../services/userAPI";
 import moment from "moment";
 import { data } from "autoprefixer";
-
-const cl = [
-    {
-        title : 'avatarName',
-        dataIndex: 'avatarName',
-        key: 'avatarName',
-        render: (_,record) =>(
-            <NavLink className="avatar-account-item" to="#">
-                <img src={record.avatarName} alt="" />
-            </NavLink>
-        )
-    },
-    {
-        title : 'name',
-        dataIndex: 'name',
-        key: 'name'
-    },
-    {
-        title : 'email',
-        dataIndex: 'email',
-        key: 'email'
-    },
-    {
-        title : 'phone',
-        dataIndex: 'phone',
-        key: 'phone'
-    },
-    {
-        title : 'username',
-        dataIndex: 'username',
-        key: 'username'
-    },
-    {
-        title : 'role',
-        dataIndex: 'role',
-        key: 'role'
-    },
-    {
-        title : 'updateAt',
-        dataIndex: 'updateAt',
-        key: 'updateAt',
-        render: (_,record) =>{
-            let date = formattedDateTime(record.updateAt);
-            return <p>{date}</p>
-        }
-    },
-    {
-        title: 'action',
-        key: 'action',
-        render: (_,record) => (
-            <Space size="middle">
-                <NavLink className="btn-action btn-update" to={"/account/update/" + record.id}>update</NavLink>
-                <NavLink className="btn-action btn-delete" to="#">delete</NavLink>
-            </Space>
-        ),
-    }
-]
-
-const formSearch = [
-
-]
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faTrash,faPen} from '@fortawesome/free-solid-svg-icons';
 
 const formattedDateTime = (date) => {
-    return moment(date).format("DD MMM YYYY, hh:mm A");
+    return moment(date).format("DD-MM-YYYY");
 }
 const PageAccount = (props) => {
     const [dataSource,setDataSource] = useState({});
-    const [columns, setColumns] = useState(cl);
+    const [columns, setColumns] = useState([
+        {
+            title : 'Avatar',
+            dataIndex: 'avatarName',
+            key: 'avatarName',
+            render: (_,record) =>(
+                <NavLink className="avatar-account-item" to="#">
+                    <Avatar src={record.avatarName} alt="" />
+                </NavLink>
+            )
+        },
+        {
+            title : 'Name',
+            dataIndex: 'name',
+            key: 'name',
+            render: (_,record) => {
+                return <NavLink to={``}>{record.name}</NavLink>
+            }
+        },
+        {
+            title : 'Email',
+            dataIndex: 'email',
+            key: 'email'
+        },
+        {
+            title : 'Phone',
+            dataIndex: 'phone',
+            key: 'phone'
+        },
+        {
+            title : 'User Name',
+            dataIndex: 'username',
+            key: 'username'
+        },
+        {
+            title : 'Role',
+            dataIndex: 'role',
+            key: 'role',
+            render : (_,record) =>{
+                if(record.role == 1) return <p>ADMIN</p>
+                if(record.role == 2) return <p>MANAGER</p>
+                if(record.role == 3) return <p>HR</p>
+            }
+        },
+        {
+            title : 'Update At',
+            dataIndex: 'updateAt',
+            key: 'updateAt',
+            render: (_,record) =>{
+                let date = formattedDateTime(record.updateAt);
+                return <p>{date}</p>
+            }
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (_,record) => (
+                <Space size="middle">
+                    <NavLink className="btn-action btn-update" to={"/account/update/" + record.id}>
+                        <FontAwesomeIcon icon={faPen} />
+                    </NavLink>
+                    <Button type="default" className="btn-action btn-delete" onClick={() => DeleteAccount(record.id)}><FontAwesomeIcon icon={faTrash} /></Button>
+                </Space>
+            ),
+        }
+    ]);
     const [pageable,setPageable] = useState({
         page: 0,
         size: 10,
         sort: "id:ASC"
     });
-    const [valueConditions,setValueConditions] = useState({
-    });
+    const [valueConditions,setValueConditions] = useState({});
     const [matchModeConditions,setMatchModeConditions] = useState({
         name: "like",
         email: "like",
@@ -106,6 +111,7 @@ const PageAccount = (props) => {
         }
     };
 
+
     const handlePageChange = (newPage) =>{
         setPageable({
             ...pageable,
@@ -113,6 +119,13 @@ const PageAccount = (props) => {
         })
     }
 
+    const DeleteAccount = async (id) => {
+        const res = await fetchAdminDeleteAccountById(id)
+        if(res.status == HttpStatusCode.NoContent){
+            alert(res.message);
+        }
+    }
+    
     const getUsers = async () => {
         let newConditions = {};
         Object.keys(valueConditions).forEach((condition) => {
@@ -160,7 +173,11 @@ const PageAccount = (props) => {
             </div>
             <div className="item-form">
                 <span>Role</span>
-                <Input placeholder="Role" name="role" onChange={handleInputChange} value={valueConditions.role}/>
+                <Select placeholder="Role" name="role" onChange={handleInputChange} value={valueConditions.role}>
+                    <Option value="1">ADMIN</Option>
+                    <Option value="2">MANAGER</Option>
+                    <Option value="3">HR</Option>
+                </Select>
             </div>
             </div>
             {/* <button onClick={handleSubmitSearchForm} className="btn-search-form-common">Search</button> */}

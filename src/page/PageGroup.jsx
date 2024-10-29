@@ -1,4 +1,4 @@
-import { Button, Select, Space } from "antd";
+import { Select, Space } from "antd";
 import TableComponent from "../component/common/TableComponent";
 import { NavLink, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -8,27 +8,31 @@ import { fetchGetUsers } from "../services/userAPI";
 import moment from "moment";
 import { data } from "autoprefixer";
 import { fetchGetCandidate } from "../services/candidateApi";
-import { fetchGetCvs } from "../services/cvAPI";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faTrash,faPen} from '@fortawesome/free-solid-svg-icons';
-import { getNameReference } from "../utils/ConvertTime";
+import { fetchGetGroups } from "../services/groupAPI";
 
 const cl = [
     {
-        title: '',
-        render:(_,record) => (
-            <NavLink to={`/cv/${record.idCv}`}>See Detail</NavLink>
+        title : 'Name',
+        dataIndex: 'name',
+        key: 'name',
+        render: (_,record) =>(
+            <NavLink to={`/group/${record.id}`}>
+                {record.name}
+            </NavLink>
         )
     },
+    
     {
-        title : 'Position',
-        dataIndex: 'position',
-        key: 'position'
+        title : 'Manager',
+        dataIndex: 'managerId',
+        key: 'managerId'
     },
     {
-        title : 'Experience',
-        dataIndex: 'experience',
-        key: 'experience'
+        title : 'Modifier',
+        dataIndex: 'modifier',
+        key: 'modifier'
     },
     {
         title : 'Description',
@@ -36,29 +40,16 @@ const cl = [
         key: 'description'
     },
     {
-        title : 'Skills',
-        dataIndex: 'skills',
-        key: 'skills',
+        title : 'Total Member',
+        dataIndex: 'totalMember',
+        key: 'totalMember',
     },
     {
-        title : 'Education',
-        dataIndex: 'education',
-        key: 'education',
-    },
-    {
-        title : 'Reference',
-        dataIndex: 'reference',
-        key: 'reference',
-        render: (_,record) => {
-            return <NavLink to={record.reference}   >{getNameReference(record.reference)}</NavLink>
-        }
-    },
-    {
-        title: 'Action',
+        title: 'action',
         key: 'action',
         render: (_,record) => (
             <Space size="middle">
-                <NavLink className="btn-action btn-update" to={"/cv/update/" + record.idCv}>
+                <NavLink className="btn-action btn-update" to={"/account/update/" + record.id}>
                     <FontAwesomeIcon icon={faPen} />
                 </NavLink>
                 <NavLink className="btn-action btn-delete" to="#"><FontAwesomeIcon icon={faTrash} /></NavLink>
@@ -70,7 +61,7 @@ const cl = [
 const formattedDateTime = (date) => {
     return moment(date).format("DD-MM-YYYY hh:mm A");
 }
-const PageCvs = (props) => {
+const PageGroups = (props) => {
     const [dataSource,setDataSource] = useState({});
     const [columns, setColumns] = useState(cl);
     const [pageable,setPageable] = useState({
@@ -111,7 +102,7 @@ const PageCvs = (props) => {
         })
     }
 
-    const getCvs = async () => {
+    const getGroups = async () => {
         let newConditions = {};
         Object.keys(valueConditions).forEach((condition) => {
             newConditions = {
@@ -123,8 +114,7 @@ const PageCvs = (props) => {
             }
         });
         const request = JSON.stringify(newConditions)
-        const res = await fetchGetCvs(pageable,request);
-        console.log(res.data)
+        const res = await fetchGetGroups(pageable,request);
         if(res.status == 200){
             setDataSource({
                 ...dataSource,
@@ -134,7 +124,7 @@ const PageCvs = (props) => {
     }
  
     useEffect(() =>{
-        getCvs();
+        getGroups();
     },[pageable,valueConditions])
 
     return <>
@@ -142,24 +132,8 @@ const PageCvs = (props) => {
             <span className="title-form-search-common">Search form</span>
             <div className="form-search-common">
             <div className="item-form">
-                <span>Position</span>
-                <Input placeholder="Position" onChange={handleInputChange} name="position" value={valueConditions.position}/>
-            </div>
-            <div className="item-form">
-                <span>Experience</span>
-                <Input placeholder="Experience" name="experience" onChange={handleInputChange} value={valueConditions.experience}/>
-            </div>
-            <div className="item-form">
-                <span>Description</span>
-                <Input placeholder="Description" name="description" onChange={handleInputChange} value={valueConditions.description}/>
-            </div>
-            <div className="item-form">
-                <span>Skills</span>
-                <Input placeholder="Skills" name="skills" onChange={handleInputChange} value={valueConditions.skills}/>
-            </div>
-            <div className="item-form">
-                <span>Education</span>
-                <Input placeholder="Education" name="education" onChange={handleInputChange} value={valueConditions.education}/>
+                <span>Name</span>
+                <Input placeholder="Name user" onChange={handleInputChange} name="name" value={valueConditions.name}/>
             </div>
             </div>
             {/* <button onClick={handleSubmitSearchForm} className="btn-search-form-common">Search</button> */}
@@ -167,11 +141,11 @@ const PageCvs = (props) => {
         <TableComponent columns={columns} 
         data={dataSource.items} 
         total={dataSource.total*10} 
-        title="Table CVs" 
+        title="Table Group" 
         onPageChange={handlePageChange}
-        linkAdd={`http://localhost:5173/cv/new`}
+        linkAdd={`http://localhost:5173/group/new`}
         />
     </>
 }
 
-export default PageCvs;
+export default PageGroups;

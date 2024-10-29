@@ -2,6 +2,7 @@ import React, { useState} from 'react';
 import { Button, Form, Input, Select,Modal, Upload } from 'antd';
 import { fetchCreateNewAccount } from '../services/userAPI';
 import { UploadOutlined } from '@ant-design/icons';
+import { NavLink } from 'react-router-dom';
 
 const AddNewAccount = () => {
     const [form] = Form.useForm();
@@ -25,7 +26,10 @@ const AddNewAccount = () => {
 
     const handleOk = () => {
         const data = form.getFieldsValue();
-        createUser(data);
+        createUser({
+          ...data,
+          avatar: null
+        });
     };
   
     const handleCancel = () => {      
@@ -37,6 +41,7 @@ const AddNewAccount = () => {
         <h2 className="title">
             Form create new account
         </h2>
+        <p className='title-bottom'>Please fill in candidate information in the form below.</p>
 
         <Form className=''
         layout='vertical'
@@ -46,11 +51,6 @@ const AddNewAccount = () => {
         }}
         onFinish={clickSubmit}
         >
-        <Form.Item label="Avatar" name="avatar">
-        <Upload >
-        <Button icon={<UploadOutlined />}>Click to Upload</Button>
-        </Upload>
-        </Form.Item>
         <Form.Item label="Name" name="name">
             <Input placeholder="Name" />
         </Form.Item>
@@ -66,15 +66,18 @@ const AddNewAccount = () => {
       <Form.Item label="Password" name="password">
         <Input.Password placeholder="Password" />
       </Form.Item>
-      <Form.Item label="Role" name="role">
-        <Select defaultValue={3}>
+      <Form.Item label="Role" name="role" initialValue={3}>
+        <Select>
         <Select.Option value={1}>ADMIN</Select.Option>
         <Select.Option value={2}>MANAGER</Select.Option>
         <Select.Option value={3}>HR</Select.Option>
         </Select>
       </Form.Item>
         <Form.Item className='btn-submit'>
-        <Button  type="primary" htmlType='submit'>Submit</Button>
+        <NavLink to="/account/list" className='btn-cancel mr-4 w-[150px]' type='default'>
+          Cancel
+        </NavLink>
+        <Button className='w-[150px]' type="primary" htmlType='submit'>Submit</Button>
       </Form.Item>
         </Form>
         <Modal

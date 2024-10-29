@@ -3,21 +3,28 @@ import axios from "axios";
 const instance = axios.create({
     baseURL: "http://localhost:8083",
     headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJyb290IiwiaWF0IjoxNzI5MTUwMDI0LCJleHAiOjE3MjkxNzA3NjB9.j6FXP4vo4QIAEY4_CrHDmaCYy_RgrzIihu4aNZAijGZcs5BkK-cq7AzgmNsHEmqF',
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'application/json'
     }
-
 });
 
-instance.interceptors.response.use(function (response){
-    // if (localStorage.getItem("access-token")) {
-    //     const token = localStorage.getItem("access-token");
-    //     response.headers.Authorization = `Bearer ${token}`;
-    // }
+instance.interceptors.request.use(
+    config => {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
 
-    return response ? response.data : {statusCode: response.status};
-},function (error){
-    let res = {}
+
+instance.interceptors.response.use(
+    response => response.data,
+    error => {
+    let res = {};
     if(error.response)
     {
         res.data =  error.response.data;
@@ -29,8 +36,7 @@ instance.interceptors.response.use(function (response){
     }else{
         console.log("Error",error.message);
     }
-
-    return res;
+    return Promise.reject(res)
 });
 
 export default instance;

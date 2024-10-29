@@ -1,31 +1,50 @@
 import { useState } from "react"
 import { Input} from 'antd';
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { requestVeryfyOtp } from "../services/authAPI";
 
-const VerifyOTP = () => {
+const VerifyOTP = (props) => {
     const [otp,setOtp] = useState(0);
+    const location = useLocation();
+    const {username} = location.state || {};
+    const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setOtp(e.target.value); // Cập nhật state khi input thay đổi
-      };
+    const rqVeryfyOtp = async (data) => {
+        const res = await requestVeryfyOtp(data);
+        if(res.data.status != undefined){
+            alert('chan qua');
+        }else{
+            localStorage.setItem('id', res.data.userId);
+            localStorage.setItem('accessToken', res.data.accessToken);
+            localStorage.setItem('refreshToken', res.data.refreshToken);
+            navigate("/dashboard");
+        }
+    }
+
+    const handleChange = (value) => {
+        setOtp(value);
+      }; 
     
-      // Hàm xử lý khi người dùng nhấn nút
       const handleSubmit = () => {
-        console.log('Input value:', inputValue); // Lấy giá trị từ state
-        // Thực hiện các hành động khác với giá trị này
+        const data = {
+            username: username,
+            otp: otp
+        }
+         
+        rqVeryfyOtp(data);
       };
     return (
         <div className="form-verify-otp">
             <span className="title">OTP authentication</span>
             <span className="text">Please check your email and enter the OTP code just sent</span>
             <Input.OTP
-            value={otp} // Đặt giá trị của input từ state
-            onChange={handleChange} // Xử lý sự kiện thay đổi
+            value={otp}
+            onChange={handleChange} 
             />
             {/* time */}
             <div className="btn-form">
                 <NavLink className="item-btn-form btn-cancel" to="/login/signin">Cancel</NavLink>
-                <button className="item-btn-form btn-submit">Submit</button>
+                <button className="item-btn-form btn-submit" onClick={() => {handleSubmit()}}>Submit</button>
             </div>
         </div>
     )

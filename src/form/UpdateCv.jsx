@@ -2,23 +2,24 @@ import React, { useEffect, useState} from 'react';
 import { Button, Form, Input, Select,Modal, Upload } from 'antd';
 import { fetchAdminUpdateAccount, fetchCreateNewAccount, fetchGetDetailUserById } from '../services/userAPI';
 import { UploadOutlined,PlusOutlined } from '@ant-design/icons';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
+import { fetchGetDetailCandidateById, fetchUpdateCandidate } from '../services/candidateApi';
+import { formDateTimeRequest } from '../utils/ConvertTime';
+import TextArea from 'antd/es/input/TextArea';
+import { fetchGetDetailCvById, fetchUpdateCv } from '../services/cvAPI';
 
-const UpdateAccount = () => {
+const UpdateCv = () => {
     const [form] = Form.useForm();
     const [modalOpen, setModalOpen] = useState(false);
     const [modalText, setModalText] = useState('Are you sure you want to add this account?');
     const [loading, setLoading] = useState(true);
     const [fileList,setFileList] = useState([]);
-    const [imageUrl, setImageUrl] = useState('');
     const [dataAccount,setDataAccount] = useState({});
     const {id} = useParams();
 
     const handleUploadChange = ({ fileList }) => {
-    // Giới hạn chỉ 1 file
     setFileList(fileList.slice(-1));
 
-    // Lấy URL của file upload để hiển thị
     if (fileList.length > 0) {
       const reader = new FileReader();
       reader.onload = () => setImageUrl(reader.result);
@@ -33,8 +34,8 @@ const UpdateAccount = () => {
     console.log('Uploaded file:', fileList);
   };
    
-    const updateUser = async (id,data) => {
-        const res = await fetchAdminUpdateAccount(id,data);
+    const updateCv = async (id,data) => {
+        const res = await fetchUpdateCv(id,data);
         if(res.status == 400){
           setModalText("The information entered is not in the correct format, please re-enter.");
         }
@@ -49,29 +50,38 @@ const UpdateAccount = () => {
     }
 
     const handleOk = () => {
-        const data = form.getFieldsValue();
-        console.log(data)
-        updateUser(id, data)
+        const data = {
+          ...form.getFieldsValue(),
+          fileCV: (fileList.length < 1 ? null : fileList[0].originFileObj),
+        }
+        updateCv(id, data)
     };
   
     const handleCancel = () => {      
       setModalOpen(false);
     };
 
-    const getUser = async (idUser) => {
-        const res = await fetchGetDetailUserById(idUser);
+    const getCandidate = async (id) => {
+        const res = await fetchGetDetailCvById(id);
         setDataAccount(res.data);
+        setFileList([{
+          uid: '-1',
+          name: 'existing_image.jpg',
+          status: 'done',
+          url: res.data.reference,
+        }]);
         setLoading(false);
     }
 
     useEffect(() => {
-      getUser(id);
+      getCandidate(id);
     },[])
 
     return <div className="form-add-entity">
         <h2 className="title">
-            Form Update account
+            Form Update CV
         </h2>
+        <p className='title-bottom'>Please fill in cv information in the form below.</p>
 
         {loading ? (
         <p>Loading form data...</p>
@@ -81,55 +91,61 @@ const UpdateAccount = () => {
         name='useForm'
         form={form}
         initialValues={{
-            avatar : dataAccount.avatarName,
-            name: dataAccount.name,
-            phone: dataAccount.phone,
-            role: dataAccount.role,
-            email: dataAccount.email,
+            candidateId: dataAccount.idCandidate,
+            position: dataAccount.position,
+            experience: dataAccount.experience,
+            description: dataAccount.description,
+            skills: dataAccount.skills,
+            education: dataAccount.education,
+            status: dataAccount.status,
         }}
         onFinish={clickSubmit}
         >
-        <Form.Item label="Upload Avatar" valuePropName="fileList" >
+        <Form.Item label="Candidate" name="candidateId">
+            <Input placeholder="Candidate" />
+        </Form.Item>
+        <Form.Item label="Position" name="position">
+            <Input placeholder="Position" />
+        </Form.Item>
+        <Form.Item label="experience" name="experience">
+        <Input placeholder="experience" />
+      </Form.Item>
+      <Form.Item label="skills" name="skills">
+        <Input placeholder="skills" />
+      </Form.Item>
+      <Form.Item label="education" name="education">
+        <Input placeholder="education" />
+      </Form.Item>
+      <Form.Item label="status" name="status">
+        <Select>
+        <Option value="PASS">Pass</Option>
+        <Option value="FAIL">Fail</Option>
+        <Option value="PENDING">Pending</Option>
+        </Select>
+      </Form.Item>
+      <Form.Item label="description" name="description">
+        <TextArea rows={4} placeholder="description" />
+      </Form.Item>
+        <Form.Item label="File CV" name='fileCV' >
         <Upload
-          listType="picture-card"
+          listType="file"
           fileList={fileList}
           beforeUpload={() => false} // Để tắt upload tự động
           onChange={handleUploadChange}
           onRemove={() => {
             setFileList([]); // Xóa file đã upload
-            setImageUrl('');  // Xóa ảnh hiển thị
           }}
         >
-          {fileList.length < 1 && <PlusOutlined />}
+        <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
-        
-      </Form.Item>
-        <Form.Item initialValue={dataAccount.name} label="Name" name="name">
-            <Input placeholder="Name" />
         </Form.Item>
-        <Form.Item label="Email" name="email">
-        <Input placeholder="Email" />
-      </Form.Item>
-      <Form.Item label="Phone" name="phone">
-        <Input placeholder="Phone" />
-      </Form.Item>
-      <Form.Item label="Role" name="role">
-        <Select defaultValue={3}>
-        <Select.Option value={1}>ADMIN</Select.Option>
-        <Select.Option value={2}>MANAGER</Select.Option>
-        <Select.Option value={3}>HR</Select.Option>
-        </Select>
-      </Form.Item>
         <Form.Item className='btn-submit'>
-        <Button  type="primary" htmlType='submit'>Submit</Button>
+        <NavLink to="/candidate" className='btn-cancel mr-4 w-[150px]' type='default'>Cancel</NavLink>
+          <Button className='w-[150px]'  type="primary" htmlType='submit'>Submit</Button>
       </Form.Item>
-             
-        
         </Form>
         
         )}
-
-        
         <Modal
           onOk={handleOk}
           onCancel={handleCancel}
@@ -141,4 +157,4 @@ const UpdateAccount = () => {
     </div>
 }
 
-export default UpdateAccount;
+export default UpdateCv;

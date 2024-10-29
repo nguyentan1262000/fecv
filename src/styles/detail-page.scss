@@ -1,0 +1,134 @@
+.candidate__detail{
+    width: 70%;
+    margin: 0 auto;
+
+    .title__candidate{
+        font-size: 25px;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+        
+    .info{
+        display: flex;
+        gap: 30px;
+
+        .avatar{
+            width: 35%;
+            position: relative;
+            aspect-ratio: 1;
+
+            svg{
+                position: absolute;
+                bottom: 0;
+                cursor: pointer;
+                font-size: 35px;
+                transform: translateX(-50%);
+                color:   rgb(187, 98, 98);  
+            }
+            
+            img{
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                
+                border: 6px solid rgb(187, 98, 98); 
+            }
+        }
+
+        .context-info{
+            width: 100%;
+            
+            .item-form{
+                display: flex;
+                margin-bottom: 25px;
+                font-size: 16px;
+                gap: 20px;
+                span {
+                    width: 15%;
+                    display: block;
+                    text-align: end;
+                }
+            }
+        }   
+    }
+
+    .group__detail-info{
+
+        .context-info{
+
+            .item-form{
+                width: calc(100% / 3);
+
+                span{
+                    width: unset;
+                }
+            }
+        }
+        
+        span{
+            width: auto;
+        }
+    }
+
+    .underline{
+        height: 2px;
+        width: 100%;
+        background: #c5c3c3;
+        border-radius: 50%;margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+.cv-detail{
+    .info-cv{
+        display: flex;
+        flex-wrap:  wrap;
+        column-gap: 20px;
+        .item-form{
+            width: calc(100% / 3 - 20px);
+            display: flex;
+            margin-bottom: 25px;
+            font-size: 16px;
+            gap: 20px;
+        }        
+        .w-100{
+            width: 100%;
+        }
+    }
+}
+
+.group__detail{
+    .btn__add-new{
+        display: none;
+    }
+
+    .tab-menu-group{
+        position: relative;
+
+        .btn__add-member{
+            position: absolute;
+            left: 0;
+            z-index: 1;
+        }
+    }   
+}
+
+.form__add-member{
+    // display: none;
+    .ant-tag{
+        display: flex;
+
+        img{
+            display: none;
+        }
+
+        .item-user{
+            .avatar{
+                display: none;
+            }
+        }
+
+        span{font-size: 14px;}
+    }
+}

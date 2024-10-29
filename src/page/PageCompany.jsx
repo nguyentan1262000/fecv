@@ -1,4 +1,4 @@
-import { Button, Select, Space } from "antd";
+import { Avatar, Button, Select, Space } from "antd";
 import TableComponent from "../component/common/TableComponent";
 import { NavLink, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -8,61 +8,56 @@ import { fetchGetUsers } from "../services/userAPI";
 import moment from "moment";
 import { data } from "autoprefixer";
 import { fetchGetCandidate } from "../services/candidateApi";
-import { fetchGetCvs } from "../services/cvAPI";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faTrash,faPen} from '@fortawesome/free-solid-svg-icons';
-import { getNameReference } from "../utils/ConvertTime";
+import { fetchGetCompanies } from "../services/companyAPI";
 
 const cl = [
     {
-        title: '',
-        render:(_,record) => (
-            <NavLink to={`/cv/${record.idCv}`}>See Detail</NavLink>
+        title : 'Avatar',
+        dataIndex: 'avatar',
+        key: 'avatar',
+        render: (_,record) =>(
+            <NavLink className="avatar-account-item" to="#">
+                <Avatar src={record.avatar} alt="no-image" />
+            </NavLink>
         )
     },
     {
-        title : 'Position',
-        dataIndex: 'position',
-        key: 'position'
+        title : 'Name',
+        dataIndex: 'name',
+        key: 'name'
     },
     {
-        title : 'Experience',
-        dataIndex: 'experience',
-        key: 'experience'
+        title : 'Email',
+        dataIndex: 'email',
+        key: 'email'
     },
     {
-        title : 'Description',
-        dataIndex: 'description',
-        key: 'description'
+        title : 'Phone',
+        dataIndex: 'phone',
+        key: 'phone'
     },
     {
-        title : 'Skills',
-        dataIndex: 'skills',
-        key: 'skills',
+        title : 'Websize',
+        dataIndex: 'websize',
+        key: 'websize',
     },
     {
-        title : 'Education',
-        dataIndex: 'education',
-        key: 'education',
+        title : 'Location',
+        dataIndex: 'location',
+        key: 'location',
     },
     {
-        title : 'Reference',
-        dataIndex: 'reference',
-        key: 'reference',
-        render: (_,record) => {
-            return <NavLink to={record.reference}   >{getNameReference(record.reference)}</NavLink>
-        }
-    },
-    {
-        title: 'Action',
-        key: 'action',
+        title: 'action',
+        key: 'Action',
         render: (_,record) => (
             <Space size="middle">
-                <NavLink className="btn-action btn-update" to={"/cv/update/" + record.idCv}>
-                    <FontAwesomeIcon icon={faPen} />
-                </NavLink>
-                <NavLink className="btn-action btn-delete" to="#"><FontAwesomeIcon icon={faTrash} /></NavLink>
-            </Space>
+                    <NavLink className="btn-action btn-update" to={"/company/update/" + record.id}>
+                        <FontAwesomeIcon icon={faPen} />
+                    </NavLink>
+                    <Button type="default" className="btn-action btn-delete" onClick={() => DeleteAccount(record.id)}><FontAwesomeIcon icon={faTrash} /></Button>
+                </Space>
         ),
     }
 ]
@@ -70,7 +65,7 @@ const cl = [
 const formattedDateTime = (date) => {
     return moment(date).format("DD-MM-YYYY hh:mm A");
 }
-const PageCvs = (props) => {
+const PageCompany = (props) => {
     const [dataSource,setDataSource] = useState({});
     const [columns, setColumns] = useState(cl);
     const [pageable,setPageable] = useState({
@@ -111,7 +106,7 @@ const PageCvs = (props) => {
         })
     }
 
-    const getCvs = async () => {
+    const getCandidates = async () => {
         let newConditions = {};
         Object.keys(valueConditions).forEach((condition) => {
             newConditions = {
@@ -123,8 +118,7 @@ const PageCvs = (props) => {
             }
         });
         const request = JSON.stringify(newConditions)
-        const res = await fetchGetCvs(pageable,request);
-        console.log(res.data)
+        const res = await fetchGetCompanies(pageable,request);
         if(res.status == 200){
             setDataSource({
                 ...dataSource,
@@ -134,7 +128,7 @@ const PageCvs = (props) => {
     }
  
     useEffect(() =>{
-        getCvs();
+        getCandidates();
     },[pageable,valueConditions])
 
     return <>
@@ -142,24 +136,24 @@ const PageCvs = (props) => {
             <span className="title-form-search-common">Search form</span>
             <div className="form-search-common">
             <div className="item-form">
-                <span>Position</span>
-                <Input placeholder="Position" onChange={handleInputChange} name="position" value={valueConditions.position}/>
+                <span>Name</span>
+                <Input placeholder="Name user" onChange={handleInputChange} name="name" value={valueConditions.name}/>
             </div>
             <div className="item-form">
-                <span>Experience</span>
-                <Input placeholder="Experience" name="experience" onChange={handleInputChange} value={valueConditions.experience}/>
+                <span>Email</span>
+                <Input placeholder="Email" name="email" onChange={handleInputChange} value={valueConditions.email}/>
             </div>
             <div className="item-form">
-                <span>Description</span>
-                <Input placeholder="Description" name="description" onChange={handleInputChange} value={valueConditions.description}/>
+                <span>Phone</span>
+                <Input placeholder="Phone" name="phone" onChange={handleInputChange} value={valueConditions.phone}/>
             </div>
             <div className="item-form">
-                <span>Skills</span>
-                <Input placeholder="Skills" name="skills" onChange={handleInputChange} value={valueConditions.skills}/>
+                <span>Location</span>
+                <Input placeholder="location" name="location" onChange={handleInputChange} value={valueConditions.location}/>
             </div>
             <div className="item-form">
-                <span>Education</span>
-                <Input placeholder="Education" name="education" onChange={handleInputChange} value={valueConditions.education}/>
+                <span>Websize</span>
+                <Input placeholder="websize" name="websize" onChange={handleInputChange} value={valueConditions.websize}/>
             </div>
             </div>
             {/* <button onClick={handleSubmitSearchForm} className="btn-search-form-common">Search</button> */}
@@ -167,11 +161,11 @@ const PageCvs = (props) => {
         <TableComponent columns={columns} 
         data={dataSource.items} 
         total={dataSource.total*10} 
-        title="Table CVs" 
+        title="Table Companys" 
         onPageChange={handlePageChange}
-        linkAdd={`http://localhost:5173/cv/new`}
+        linkAdd={`http://localhost:5173/company/new`}
         />
     </>
 }
 
-export default PageCvs;
+export default PageCompany;
